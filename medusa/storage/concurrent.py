@@ -16,13 +16,13 @@
 import concurrent.futures
 import logging
 import multiprocessing
-import os
 import pathlib
 import threading
 
 from libcloud.storage.types import ObjectDoesNotExistError
 
 import medusa
+from medusa.compat import fspath
 
 
 class StorageJob:
@@ -92,7 +92,7 @@ def __upload_file(connection, src, dest, bucket):
     # check if objects resides in a sub-folder (e.g. secondary index). if it does, use the sub-folder in object path
     obj_name = '{}/{}'.format(src.parent.name, src.name) if src.parent.name.startswith('.') else src.name
     obj = connection.upload_object(
-        os.fspath(src),
+        fspath(src),
         container=bucket,
         object_name=str("{}/{}".format(dest, obj_name))
     )

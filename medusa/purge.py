@@ -18,13 +18,13 @@ import json
 import logging
 import sys
 import traceback
-import os
 
 from datetime import datetime, timedelta
 
 from medusa.index import clean_backup_from_index
 from medusa.monitoring import Monitoring
 from medusa.storage import Storage, format_bytes_str
+from medusa.compat import fspath
 
 
 def main(config, max_backup_age=0, max_backup_count=0):
@@ -136,7 +136,7 @@ def get_file_paths_from_storage(storage, fqdn):
     data_directory = "{}/data".format(fqdn)
     data_files = {
         blob.name: blob
-        for blob in storage.storage_driver.list_objects(os.fspath(data_directory))
+        for blob in storage.storage_driver.list_objects(fspath(data_directory))
     }
 
     return set(data_files.keys())

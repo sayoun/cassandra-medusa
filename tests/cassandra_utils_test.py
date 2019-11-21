@@ -74,7 +74,7 @@ class CassandraUtilsTest(unittest.TestCase):
         s = CqlSession(session)
         token_map = s.tokenmap()
         self.assertEqual(
-            {'localhost': {'is_up': True, 'tokens': [-9, -6, 0]}},
+            {'localhost': {'is_up': True, 'tokens': [0, -6, -9]}},
             token_map
         )
 

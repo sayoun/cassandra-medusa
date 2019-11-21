@@ -15,11 +15,11 @@
 
 import datetime
 import pathlib
-import os
 
 from libcloud.storage.drivers.local import LocalStorageDriver
 
 from medusa.storage.abstract_storage import AbstractStorage
+from medusa.compat import fspath
 
 
 class LocalStorage(AbstractStorage):
@@ -37,7 +37,7 @@ class LocalStorage(AbstractStorage):
         objects = self.driver.list_container_objects(self.bucket)
 
         if isinstance(path, pathlib.Path):
-            path = os.fspath(path)
+            path = fspath(path)
 
         if path is not None:
             objects = list(filter(lambda blob: blob.name.startswith(path), objects))
