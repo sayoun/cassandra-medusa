@@ -19,6 +19,7 @@ import itertools
 import logging
 import operator
 import pathlib
+import re
 
 from libcloud.storage.providers import Provider
 from libcloud.common.types import InvalidCredsError
@@ -34,6 +35,8 @@ from medusa.storage.s3_storage import S3Storage
 
 
 ManifestObject = collections.namedtuple('ManifestObject', ['path', 'size', 'MD5'])
+
+TOKENMAP_BLOB_NAME_PATTERN = pattern = re.compile('tokenmap_(.*)$')
 
 
 def format_bytes_str(value):
@@ -153,7 +156,7 @@ class Storage(object):
         for backup_index_entry in relevant_backup_names:
             _, _, backup_name, tokenmap_file = backup_index_entry.split('/')
             # tokenmap file is in format 'tokenmap_fqdn.json'
-            tokenmap_fqdn = tokenmap_file.split('_')[1].replace('.json', '')
+            tokenmap_fqdn = self.get_fqdn_from_tokenmap_blob(tokenmap_file)
             manifest_blob, schema_blob, tokenmap_blob = None, None, None
             started_blob, finished_blob = None, None
             started_timestamp, finished_timestamp = None, None
@@ -257,6 +260,12 @@ class Storage(object):
     def get_fqdn_from_backup_index_blob_name(blob_name):
         fqdn_with_extension = blob_name.split('/')[3].split('_')[1]
         return Storage.remove_extension(fqdn_with_extension)
+
+    @staticmethod
+    def get_fqdn_from_tokenmap_blob(blob_name):
+        match = TOKENMAP_BLOB_NAME_PATTERN.match(blob_name)
+        assert match is not None, 'Encountered malformed tokenmap blob name {}'.format(blob_name)
+        return Storage.remove_extension(match.group(1))
 
     @staticmethod
     def remove_extension(fqdn_with_extension):

@@ -204,6 +204,23 @@ class RestoreNodeTest(unittest.TestCase):
             self.storage.get_fqdn_from_backup_index_blob_name(blob_name)
         )
 
+    def test_get_fqdn_from_tokenmap_index_blob(self):
+        blob_name = "tokenmap_hostname-with-dashes-and-3-numbers.json"
+        self.assertEqual(
+            "hostname-with-dashes-and-3-numbers",
+            self.storage.get_fqdn_from_tokenmap_blob(blob_name)
+        )
+        blob_name = "tokenmap_hostname-with-dashes.and-dots.json"
+        self.assertEqual(
+            "hostname-with-dashes.and-dots",
+            self.storage.get_fqdn_from_tokenmap_blob(blob_name)
+        )
+        blob_name = "tokenmap_hostname_with-underscores.and-dots-and.dashes.json"
+        self.assertEqual(
+            "hostname_with-underscores.and-dots-and.dashes",
+            self.storage.get_fqdn_from_tokenmap_blob(blob_name)
+        )
+
     def test_parse_backup_index(self):
         file_content = "content of the test file"
         # SSTables for node1 and backup1
